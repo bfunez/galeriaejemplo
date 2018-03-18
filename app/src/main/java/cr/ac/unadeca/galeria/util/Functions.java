@@ -6,6 +6,7 @@ import android.widget.ImageView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
+import com.bumptech.glide.request.target.DrawableImageViewTarget;
 
 import cr.ac.unadeca.galeria.R;
 
@@ -17,10 +18,9 @@ import static com.bumptech.glide.load.resource.drawable.DrawableTransitionOption
 
 public class Functions {
     private static RequestOptions options = new RequestOptions()
-            .fitCenter()
             .placeholder(R.mipmap.ic_launcher_round)
             .error(R.mipmap.ic_launcher)
-            .fitCenter()
+            .override(400,500)
             .diskCacheStrategy(DiskCacheStrategy.ALL);
 
     public static void loadImage(String image, ImageView imagePrev, Context context) {

@@ -6,6 +6,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.design.widget.TabLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
@@ -25,14 +26,22 @@ import android.view.ViewGroup;
 
 import android.widget.TextView;
 
+import com.google.android.flexbox.AlignItems;
+import com.google.android.flexbox.FlexWrap;
+import com.google.android.flexbox.FlexboxLayoutManager;
+import com.google.android.flexbox.JustifyContent;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import cr.ac.unadeca.galeria.R;
+import cr.ac.unadeca.galeria.fragments.FragmentRandomImage;
+import cr.ac.unadeca.galeria.fragments.FragmentRandomImageRX;
 import cr.ac.unadeca.galeria.subclases.ImageViewHolder;
 import cr.ac.unadeca.galeria.subclases.RunImage;
 import cr.ac.unadeca.galeria.util.Adapter;
 import cr.ac.unadeca.galeria.util.Functions;
+import cr.ac.unadeca.galeria.util.ImageAdapter;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -67,8 +76,12 @@ public class MainActivity extends AppCompatActivity {
         // Set up the ViewPager with the sections adapter.
         mViewPager = (ViewPager) findViewById(R.id.container);
         mSectionsPagerAdapter.addFragment(new ImageFragment(), "Galeria");
+        mSectionsPagerAdapter.addFragment(new FragmentRandomImage(), "Galeria Random");
+        mSectionsPagerAdapter.addFragment(new FragmentRandomImageRX(), "Galeria RX");
         mViewPager.setAdapter(mSectionsPagerAdapter);
 
+        TabLayout tabLayout = findViewById(R.id.tabs);
+        tabLayout.setupWithViewPager(mViewPager);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -115,7 +128,12 @@ public class MainActivity extends AppCompatActivity {
                                  Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.fragment_main, container, false);
             recyclerView = (RecyclerView) rootView.findViewById(R.id.recyclerView);
-            recyclerView.setLayoutManager(new GridLayoutManager(getActivity(),2));
+
+            FlexboxLayoutManager layoutManager = new FlexboxLayoutManager(QuickContext);
+            layoutManager.setFlexWrap(FlexWrap.WRAP);
+            layoutManager.setAlignItems(AlignItems.BASELINE);
+            layoutManager.setJustifyContent(JustifyContent.CENTER);
+            recyclerView.setLayoutManager(layoutManager);
             setHasOptionsMenu(true);
             return rootView;
         }
@@ -154,112 +172,8 @@ public class MainActivity extends AppCompatActivity {
             imagenes.add(imagen1);
         }
 
-        ImageAdapter adapter = new ImageAdapter(imagenes);
+        ImageAdapter adapter = new ImageAdapter(imagenes, QuickContext);
         recyclerView.setAdapter(adapter);
-    }
-
-    public static class ImageAdapter extends RecyclerView.Adapter<ImageViewHolder> {
-        private final List<RunImage> listRunImage;
-        private final LayoutInflater inflater;
-
-        public ImageAdapter(List<RunImage> listRunImages) {
-            this.inflater = LayoutInflater.from(QuickContext);
-            this.listRunImage = listRunImages;
-        }
-
-        @Override
-        public ImageViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View view = inflater.inflate(R.layout.imageholder, parent, false);
-            return new ImageViewHolder(view);
-        }
-
-        public void animateTo(List<RunImage> models) {
-            applyAndAnimateRemovals(models);
-            applyAndAnimateAdditions(models);
-            applyAndAnimateMovedItems(models);
-        }
-
-        private void applyAndAnimateRemovals(List<RunImage> newModels) {
-            for (int i = listRunImage.size() - 1; i >= 0; i--) {
-                final RunImage model = listRunImage.get(i);
-                if (!newModels.contains(model)) {
-                    removeItem(i);
-                }
-            }
-        }
-
-        private void applyAndAnimateAdditions(List<RunImage> newModels) {
-            for (int i = 0, count = newModels.size(); i < count; i++) {
-                final RunImage model = newModels.get(i);
-                if (!listRunImage.contains(model)) {
-                    addItem(i, model);
-                }
-            }
-        }
-
-        private void applyAndAnimateMovedItems(List<RunImage> newModels) {
-            for (int toPosition = newModels.size() - 1; toPosition >= 0; toPosition--) {
-                final RunImage model = newModels.get(toPosition);
-                final int fromPosition = listRunImage.indexOf(model);
-                if (fromPosition >= 0 && fromPosition != toPosition) {
-                    moveItem(fromPosition, toPosition);
-                }
-            }
-        }
-
-        public RunImage removeItem(int position) {
-            final RunImage model = listRunImage.remove(position);
-            notifyItemRemoved(position);
-            return model;
-        }
-
-        public void addItem(int position, RunImage model) {
-            listRunImage.add(position, model);
-            notifyItemInserted(position);
-        }
-
-        public void moveItem(int fromPosition, int toPosition) {
-            final RunImage model = listRunImage.remove(fromPosition);
-            listRunImage.add(toPosition, model);
-            notifyItemMoved(fromPosition, toPosition);
-        }
-
-        @Override
-        public void onBindViewHolder(final ImageViewHolder holder, final int position) {
-            final RunImage current = listRunImage.get(position);
-            holder.image.setVisibility(View.VISIBLE);
-            if(current.url != null){
-                if(current.url.isEmpty()){
-                    Functions.loadImage(holder.image, QuickContext );
-                }else {
-                    Functions.loadImage(current.url, holder.image, QuickContext);
-                }
-            }else {
-                Functions.loadImage(holder.image, QuickContext);
-            }
-
-            holder.image.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    Intent intent = new Intent(QuickContext, ImagenGrande.class);
-                    intent.putExtra("name", current.name);
-                    intent.putExtra("author", current.author);
-                    intent.putExtra("url",current.url);
-                    QuickContext.startActivity(intent);
-                }
-            });
-        }
-
-
-
-        @Override
-        public int getItemCount() {
-            return listRunImage.size();
-        }
-
-
-
-
     }
 
 }
