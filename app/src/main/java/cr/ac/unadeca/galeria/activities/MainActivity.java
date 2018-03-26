@@ -42,6 +42,7 @@ import cr.ac.unadeca.galeria.subclases.RunImage;
 import cr.ac.unadeca.galeria.util.Adapter;
 import cr.ac.unadeca.galeria.util.Functions;
 import cr.ac.unadeca.galeria.util.ImageAdapter;
+import cr.ac.unadeca.galeria.util.Session;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -61,11 +62,13 @@ public class MainActivity extends AppCompatActivity {
      */
     private ViewPager mViewPager;
 
+    private Session sesion;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        sesion = new Session(this);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         QuickContext = this;
@@ -112,6 +115,9 @@ public class MainActivity extends AppCompatActivity {
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
+        }else if (id == R.id.action_logout){
+            sesion.logoutUser();
+            finish();
         }
 
         return super.onOptionsItemSelected(item);

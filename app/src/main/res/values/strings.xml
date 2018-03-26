@@ -4,4 +4,13 @@
     <string name="section_format">Hello World from section: %1$d</string>
     <string name="previa">Previa</string>
     <string name="galerydescription">Programación III UNADECA</string>
+    <string name="loggin">Iniciar Sesión</string>
+    <string name="register">Registrate</string>
+    <string name="username">Usuario</string>
+    <string name="password">Contraseña</string>
+    <string name="saveandlogin">Guardar e Iniciar</string>
+    <string name="action_logout">Iniciar Sesión</string>
+    <string name="register_error">El Usuario o la contraseña estan vacios</string>
+    <string name="tryregister">No se encontro el usuario debe de intentar registrarlo</string>
+    <string name="loginerror">El usuario y la contraseña son obligatorios</string>
 </resources>
