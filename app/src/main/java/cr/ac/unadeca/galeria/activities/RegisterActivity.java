@@ -50,6 +50,7 @@ public class RegisterActivity extends AppCompatActivity{
             Users user = new Users();
             user.password = Functions.md5(password.getText().toString());
             user.username = username.getText().toString();
+            user.save();
             Session session = new Session(this);
             session.createLoginSession(user.id,user.nombre, user.roll);
             goToMain();

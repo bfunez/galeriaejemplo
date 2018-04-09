@@ -8,5 +8,5 @@ import com.raizlabs.android.dbflow.annotation.Database;
 @Database(name = GaleriaDB.dbname , version = GaleriaDB.dbversion)
 public class GaleriaDB  {
     public static final String  dbname= "galeriaDB";
-    public static final int dbversion= 1;
+    public static final int dbversion= 2;
 }

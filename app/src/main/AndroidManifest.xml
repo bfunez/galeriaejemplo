@@ -5,6 +5,7 @@
 
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
         android:allowBackup="true"
@@ -31,6 +32,7 @@
         <activity
             android:name=".activities.LoginActivity"
             android:label="@string/app_name"
+            android:theme="@style/AppLogin"
             android:windowSoftInputMode="adjustResize|stateAlwaysHidden">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -42,6 +44,16 @@
         <activity
             android:name=".activities.ImagenGrande"
             android:label="@string/previa"
+            android:windowSoftInputMode="adjustResize|stateAlwaysHidden"
+            android:parentActivityName=".activities.MainActivity"
+            tools:ignore="UnusedAttribute">
+            <meta-data android:name="android.support.PARENT_ACTIVITY"
+                android:value=".activities.MainActivity" />
+        </activity>
+
+        <activity
+            android:name=".activities.AgregarImagenActivity"
+            android:label="@string/agregar"
             android:windowSoftInputMode="adjustResize|stateAlwaysHidden"
             android:parentActivityName=".activities.MainActivity"
             tools:ignore="UnusedAttribute">

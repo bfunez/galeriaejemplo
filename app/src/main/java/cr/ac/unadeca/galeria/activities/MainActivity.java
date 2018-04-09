@@ -30,11 +30,21 @@ import com.google.android.flexbox.AlignItems;
 import com.google.android.flexbox.FlexWrap;
 import com.google.android.flexbox.FlexboxLayoutManager;
 import com.google.android.flexbox.JustifyContent;
+import com.raizlabs.android.dbflow.sql.language.SQLite;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Callable;
 
 import cr.ac.unadeca.galeria.R;
+import cr.ac.unadeca.galeria.database.Models.Imagen;
 import cr.ac.unadeca.galeria.fragments.FragmentRandomImage;
 import cr.ac.unadeca.galeria.fragments.FragmentRandomImageRX;
 import cr.ac.unadeca.galeria.subclases.ImageViewHolder;
@@ -43,9 +53,16 @@ import cr.ac.unadeca.galeria.util.Adapter;
 import cr.ac.unadeca.galeria.util.Functions;
 import cr.ac.unadeca.galeria.util.ImageAdapter;
 import cr.ac.unadeca.galeria.util.Session;
+import io.reactivex.Observable;
+import io.reactivex.ObservableSource;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.observers.DisposableObserver;
+import io.reactivex.schedulers.Schedulers;
 
 public class MainActivity extends AppCompatActivity {
 
+    private static final int agregarImagen = 1001;
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
      * fragments for each of the sections. We use a
@@ -57,6 +74,8 @@ public class MainActivity extends AppCompatActivity {
     private Adapter mSectionsPagerAdapter;
     private static Context QuickContext;
     private static RecyclerView recyclerView;
+    private static final CompositeDisposable disposables = new CompositeDisposable();
+
     /**
      * The {@link ViewPager} that will host the section contents.
      */
@@ -90,13 +109,25 @@ public class MainActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                nuevaImagen();
             }
         });
 
     }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == agregarImagen & resultCode == RESULT_OK) {
+            setupRecyclerView();
+        }
+    }
+
+
+    private void nuevaImagen(){
+        Intent imagen = new Intent(this, AgregarImagenActivity.class);
+        startActivityForResult(imagen, agregarImagen);
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -158,28 +189,55 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    public static void setupRecyclerView(){
-        List<RunImage> imagenes = new ArrayList<>();
-        RunImage imagen = new RunImage();
-        imagen.url = "https://cdn.pixabay.com/photo/2018/02/26/16/44/bird-3183441_960_720.jpg";
-        imagen.author = "edmondlafoto";
-        imagen.name= "Foto 1";
-
-        RunImage imagen1 = new RunImage();
-        imagen1.url = "https://cdn.pixabay.com/photo/2018/03/08/15/34/tree-3208922_960_720.jpg";
-        imagen1.author = "edmondlafoto";
-        imagen1.name= "Foto 1";
-
-        for(int a=0 ; a< 10; a++){
-            imagenes.add(imagen);
-        }
-
-        for(int a=0 ; a< 10; a++){
-            imagenes.add(imagen1);
-        }
-
-        ImageAdapter adapter = new ImageAdapter(imagenes, QuickContext);
-        recyclerView.setAdapter(adapter);
+    public  static void setupRecyclerView(){
+        cargarImagenes();
     }
+
+
+    private static void cargarImagenes() {
+        disposables.add(sampleObservable()
+                // Run on a background thread
+                .subscribeOn(Schedulers.io())
+                // Be notified on the main thread
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeWith(new DisposableObserver<List<RunImage>>() {
+                    @Override public void onComplete() {
+
+                    }
+
+                    @Override public void onError(Throwable e) {
+
+                    }
+
+                    @Override public void onNext(List<RunImage> images) {
+                        ImageAdapter adapter = new ImageAdapter(images, QuickContext);
+                        recyclerView.setAdapter(adapter);
+                    }
+                }));
+    }
+
+    private static Observable<List<RunImage>> sampleObservable() {
+        return Observable.defer(new Callable<ObservableSource<? extends List<RunImage>>>() {
+            @Override public ObservableSource<? extends List<RunImage>> call() throws Exception {
+                // Do some long running operation
+                List<RunImage> images= new ArrayList<>();
+                try{
+                    List<Imagen> imagenes = SQLite.select().from(Imagen.class).queryList();
+                    RunImage imageR;
+                    for(Imagen image : imagenes){
+                        imageR = new RunImage();
+                        imageR.url = image.uri;
+                        imageR.name = image.nombre;
+                        imageR.author = image.autor;
+                        images.add(imageR);
+                    }
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+                return Observable.just(images);
+            }
+        });
+    }
+
 
 }

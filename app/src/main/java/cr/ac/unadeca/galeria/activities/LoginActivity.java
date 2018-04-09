@@ -40,6 +40,9 @@ public class LoginActivity extends AppCompatActivity {
         image = findViewById(R.id.imageLogin);
 
         session = new Session(this);
+        if(session.isLoggedIn()){
+            goToMain();
+        }
         Button iniciar = findViewById(R.id.login);
         iniciar.setOnClickListener(new View.OnClickListener() {
             @Override

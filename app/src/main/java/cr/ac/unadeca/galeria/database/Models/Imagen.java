@@ -8,25 +8,20 @@ import com.raizlabs.android.dbflow.structure.BaseModel;
 import cr.ac.unadeca.galeria.database.GaleriaDB;
 
 /**
- * Created by Brian on 3/26/18.
+ * Created by Brian on 4/9/18.
  */
 @Table(database = GaleriaDB.class)
-public class Users  extends BaseModel{
+public class Imagen extends BaseModel {
     @Column
     @PrimaryKey(autoincrement = true)
     public long id;
 
     @Column
-    public String username;
-
-    @Column
-    public String password;
-
+    public String uri;
 
     @Column
     public String nombre;
 
     @Column
-    public String roll;
-
+    public String autor;
 }

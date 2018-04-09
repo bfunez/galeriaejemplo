@@ -8,6 +8,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.DrawableImageViewTarget;
 
+import java.io.File;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
@@ -27,6 +28,14 @@ public class Functions {
             .diskCacheStrategy(DiskCacheStrategy.ALL);
 
     public static void loadImage(String image, ImageView imagePrev, Context context) {
+        Glide.with(context)
+                .load(image)
+                .apply(options)
+                .transition(withCrossFade())
+                .into(imagePrev);
+    }
+
+    public static void loadImage(File image, ImageView imagePrev, Context context) {
         Glide.with(context)
                 .load(image)
                 .apply(options)

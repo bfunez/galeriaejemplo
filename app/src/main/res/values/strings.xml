@@ -13,4 +13,8 @@
     <string name="register_error">El Usuario o la contraseña estan vacios</string>
     <string name="tryregister">No se encontro el usuario debe de intentar registrarlo</string>
     <string name="loginerror">El usuario y la contraseña son obligatorios</string>
+    <string name="nombre">Escriba el nombre de la imagen</string>
+    <string name="autor">Escriba el nombre del autor</string>
+    <string name="guardar">Guardar</string>
+    <string name="agregar">Agregar Imagen</string>
 </resources>
